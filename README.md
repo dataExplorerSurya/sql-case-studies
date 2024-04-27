@@ -16,10 +16,5 @@ SQL (Structured Query Language) is a fundamental tool in data science and analys
 
 🏗️ Data Modeling: Designing and managing relational database schemas and data models.
 
-## How to Use
 
-1. Clone this repository to your local machine:
-
-```bash
-git clone https://github.com/dataExplorerSurya/sql-case-studies
 
