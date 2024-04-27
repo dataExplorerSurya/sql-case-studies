@@ -21,5 +21,5 @@ SQL (Structured Query Language) is a fundamental tool in data science and analys
 1. Clone this repository to your local machine:
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/dataExplorerSurya/sql-case-studies
 
