@@ -1,0 +1,282 @@
+1. HOW MANY RESTAURANTS HAVE A RATING GREATER THAN 4.5?
+
+QUERY:
+
+select count(*) as high_rated_restaurants 
+from swiggy 
+where rating>4.5
+
+RESULT :
+
++------------------------+
+| high_rated_restaurants |
++------------------------+
+|                   1573 |
++------------------------+
+
+
+
+
+2. WHICH IS THE TOP 1 CITY WITH THE HIGHEST NUMBER OF RESTAURANTS?
+
+QUERY:
+
+select city,count(distinct restaurant_name) 
+as restaurant_count from swiggy
+group by city
+order by restaurant_count desc
+limit 1;
+
+RESULT:
+
++-----------+------------------+
+| city      | restaurant_count |
++-----------+------------------+
+| Bangalore |              196 |
++-----------+------------------+
+
+
+
+3. RESTAURANTS HAVE THE WORD "PIZZA" IN THEIR NAME?
+
+QUERY:
+
+select distinct restaurant_name as pizza_restaurants
+from swiggy 
+where restaurant_name like '%Pizza%';
+
+RESULT:
+
++-------------------+
+| pizza_restaurants |
++-------------------+
+| Pizza Hut         |
+| Oven Story Pizza  |
+| Domino's Pizza    |
+| Sams Pizza        |
++-------------------+
+
+
+
+
+4. WHAT IS THE MOST COMMON CUISINE AMONG THE RESTAURANTS?
+
+QUERY:
+
+select cuisine,count(*) as cuisine_count
+from swiggy
+group by cuisine
+order by cuisine_count desc
+limit 1;
+
+RESULT:
+
++----------------------+---------------+
+| cuisine              | cuisine_count |
++----------------------+---------------+
+| North Indian,Chinese |          3098 |
++----------------------+---------------+
+
+
+
+5. WHAT IS THE AVERAGE RATING OF RESTAURANTS IN EACH CITY?
+
+QUERY:
+
+select city, avg(rating) as average_rating
+from swiggy group by city;
+
+
+RESULT:
+
++-----------+-------------------+
+| city      | average_rating    |
++-----------+-------------------+
+| Bangalore |           4.1151 	|
+| Ahmedabad |  	        4.0686  |
++-----------+-------------------+
+
+
+6. FIND TOP 5 MOST EXPENSIVE RESTAURANTS THAT OFFER CUISINE OTHER THAN INDIAN CUISINE
+
+QUERY:
+
+select distinct restaurant_name,city,cost_per_person 
+from swiggy 
+where cuisine<>'Indian' 
+order by cost_per_person desc 
+limit 5
+
+
+RESULT:
+
++---------------------------+-----------+-----------------+
+| restaurant_name           | city      | cost_per_person |
++---------------------------+-----------+-----------------+
+| China Pearl               | Bangalore |            1100 |
+| Anupam's Coast II Coast   | Bangalore |            1000 |
+| Chinita Real Mexican Food | Bangalore |            1000 |
+| Once Upon A Flame         | Bangalore |            1000 |
+| Parika                    | Bangalore |            1000 |
++---------------------------+-----------+-----------------+
+
+
+7. TOP 5 MOST EXPENSIVE  RESTAURANTS WITH THEIR RATINGS
+
+QUERY:
+
+select distinct(restaurant_name),cost_per_person,rating
+from swiggy
+order by cost_per_person desc
+limit 5;
+
+RESULT:
+
+
++---------------------------+-----------------+--------+
+| restaurant_name           | cost_per_person | rating |
++---------------------------+-----------------+--------+
+| China Pearl               |            1100 |    4.5 |
+| Anupam's Coast II Coast   |            1000 |    4.2 |
+| Chinita Real Mexican Food |            1000 |    4.3 |
+| Once Upon A Flame         |            1000 |    4.3 |
+| Parika                    |            1000 |    4.1 |
++---------------------------+-----------------+--------+
+
+
+8. RETRIEVE THE DETAILS OF RESTAURANTS THAT HAVE THE SAME NAME BUT ARE LOCATED IN DIFFERENT CITIES.
+
+QUERY
+
+select distinct t1.restaurant_name,t1.city,t2.city 
+from swiggy t1 join swiggy t2 
+on t1.restaurant_name=t2.restaurant_name and
+t1.city<>t2.city;
+
+RESULT
+
++---------------------------------+-----------+-----------+
+| restaurant_name                 | city      | city      |
++---------------------------------+-----------+-----------+
+| Subway                          | Bangalore | Ahmedabad |
+| Sweet Truth - Cake and Desserts | Ahmedabad | Bangalore |
+| Sweet Truth - Cake and Desserts | Bangalore | Ahmedabad |
+| Pizza Hut                       | Ahmedabad | Bangalore |
+| Pizza Hut                       | Bangalore | Ahmedabad |
+| KFC                             | Ahmedabad | Bangalore |
+| KFC                             | Bangalore | Ahmedabad |
+| Mainland China                  | Ahmedabad | Bangalore |
+| Mainland China                  | Bangalore | Ahmedabad |
+| Firangi Bake                    | Ahmedabad | Bangalore |
+| Firangi Bake                    | Bangalore | Ahmedabad |
+| Natural Ice Cream               | Ahmedabad | Bangalore |
+| Natural Ice Cream               | Bangalore | Ahmedabad |
+| Cafe Coffee Day                 | Ahmedabad | Bangalore |
+| Cafe Coffee Day                 | Bangalore | Ahmedabad |
+| Faasos - Wraps & Rolls          | Ahmedabad | Bangalore |
+| Faasos - Wraps & Rolls          | Bangalore | Ahmedabad |
+| McDonald's                      | Ahmedabad | Bangalore |
+| McDonald's                      | Bangalore | Ahmedabad |
+| Behrouz Biryani                 | Ahmedabad | Bangalore |
+| Behrouz Biryani                 | Bangalore | Ahmedabad |
+| Subway                          | Ahmedabad | Bangalore |
+| Oven Story Pizza                | Ahmedabad | Bangalore |
+| Oven Story Pizza                | Bangalore | Ahmedabad |
+| Burger King                     | Ahmedabad | Bangalore |
+| Burger King                     | Bangalore | Ahmedabad |
++---------------------------------+-----------+-----------+
+
+9. WHICH RESTAURANT OFFERS THE MOST NUMBER OF ITEMS IN THE 'MAIN COURSE' CATEGORY?
+
+QUERY
+
+select restaurant_name,count(item) as no_of_items
+from swiggy
+where menu_category='Main Course'
+group by restaurant_name 
+order by  no_of_items desc
+limit 1;
+
+
+RESULT
+
++-----------------+-------------+
+| restaurant_name | no_of_items |
++-----------------+-------------+
+| Spice Up        |         172 |
++-----------------+-------------+
+
+
+10. COUNT THE NUMBER  OF RESTAURANTS THAT ARE 100% VEGEATARIAN IN ALPHABETICAL ORDER OF RESTAURANT NAME.
+
+QUERY:
+
+select count(*)
+from (
+select distinct restaurant_name,
+(count(case when veg_or_non_veg='Veg' then 1 end)*100/
+count(*)) as vegetarian_percetage
+from swiggy
+group by restaurant_name
+having vegetarian_percetage=100.00
+order by restaurant_name) as t
+
+RESULT:
+
++------------------+
+| no_of_restaurant |
++------------------+
+|              103 |
++------------------+
+
+
+11. WHICH TOP 5 RESTAURANT OFFERS HIGHEST NUMBER OF CATEGORIES?
+
+QUERY:
+
+select distinct restaurant_name, count(distinct menu_category) as no_of_categories
+from swiggy
+group by restaurant_name
+order by no_of_categories desc
+limit 5;
+
+
+
+RESULT
+
++---------------------+------------------+
+| restaurant_name     | no_of_categories |
++---------------------+------------------+
+| Imperial Restaurant |               39 |
+| Asha Sweet Center   |               37 |
+| Udupi Palace        |               30 |
+| Hotel Empire        |               30 |
+| Bangaliana          |               27 |
++---------------------+------------------+
+
+12. WHICH RESTAURANT PROVIDES THE HIGHEST PERCENTAGE OF NON-VEGEATARIAN FOOD?
+
+QUERY:
+
+select distinct restaurant_name,
+(count(case when veg_or_non_veg='Non-veg' then 1 end)*100
+/count(*)) as nonvegetarian_percentage
+from swiggy
+group by restaurant_name
+order by nonvegetarian_percentage desc limit 1;
+
+RESULT:
+
++---------------------+--------------------------+
+| restaurant_name     | nonvegetarian_percentage |
++---------------------+--------------------------+
+| Donne Biryani House |                 100.0000 |
++---------------------+--------------------------+
+
+
+
+
+
+
+
+
