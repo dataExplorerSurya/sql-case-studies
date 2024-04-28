@@ -1,0 +1,367 @@
+Questions and Insights
+
+1. How many bookings have been made in total?
+
+Query:
+
+select count(*) from oyo_bookings;
+
+Result:
+
++----------+
+| count(*) |
++----------+
+|     2888 |
++----------+
+
+Insights:
+
+Understanding the total volume of bookings provides a baseline for further analysis and allows us to track booking trends over time.
+
+
+2. How many hotels are their in different cities
+
+Query:
+
+select City,count(*) as number_of_hotels
+from city_hotels
+group by City;
+
+Result:
+
++-----------+------------------+
+| City      | number_of_hotels |
++-----------+------------------+
+| Gurgaon   |               51 |
+| Delhi     |               85 |
+| Noida     |               24 |
+| Bangalore |               61 |
+| Mumbai    |               36 |
+| Jaipur    |               25 |
+| Hyderabad |               26 |
+| Pune      |               21 |
+| Chennai   |               17 |
+| Kolkata   |               11 |
++-----------+------------------+
+
+Insights:
+
+Delhi and Gurgaon have the highest number of hotels, indicating a competitive hospitality market in the National Capital Region. Cities like Kolkata and Chennai have fewer hotels, suggesting potential opportunities for expansion and growth in these markets.
+
+
+3. What is the distribution of booking status?
+
+
+Query:
+
+select status,count(*)
+from oyo_bookings
+group by status;
+
+Result:
+
++-----------+----------+
+| status    | count(*) |
++-----------+----------+
+| Cancelled |      953 |
+| Stayed    |     1788 |
+| No Show   |      147 |
++-----------+----------+
+
+Insights:
+
+1. The majority of bookings resulted in guests staying, with 1788 bookings recorded as "Stayed".
+2. "Cancelled" bookings constitute a significant portion at 953, indicating potential areas for improvement in managing cancellations and optimizing booking processes.
+
+
+4. Top 5 cities which has  highest number of bookings?
+
+Query:
+
+select City,count(*) as total_bookings
+from oyo_bookings join city_hotels
+on city_hotels.hotel_id=oyo_bookings.hotel_id
+group by City
+order by total_bookings desc
+limit 5;
+
+Result:
+
++-----------+----------------+
+| City      | total_bookings |
++-----------+----------------+
+| Gurgaon   |            872 |
+| Delhi     |            609 |
+| Bangalore |            525 |
+| Noida     |            230 |
+| Mumbai    |            179 |
++-----------+----------------+
+
+
+Insights:
+
+1.Gurgaon has the highest number of bookings among the cities listed, indicating strong demand for accommodation in the region.
+2.Delhi and Bangalore follow closely, suggesting significant hotel activity in these metropolitan areas as well.
+
+
+5. On which days of the week do most check-ins occur?
+
+Query:
+
+select dayname(check_in) as week_day ,count(*) as checkin_count
+from oyo_bookings 
+group by week_day
+ORDER BY FIELD(week_day, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+
+Result:
+
++-----------+---------------+
+| week_day  | checkin_count |
++-----------+---------------+
+| Sunday    |           361 |
+| Monday    |           368 |
+| Tuesday   |           388 |
+| Wednesday |           411 |
+| Thursday  |           385 |
+| Friday    |           466 |
+| Saturday  |           509 |
++-----------+---------------+
+
+Insights:
+
+1. Weekends, particularly Saturdays, exhibit the highest check-in activity, suggesting a trend of leisure or weekend    getaways among guests.
+2. Weekdays, notably Wednesdays and Fridays, also see significant check-in counts, indicating a mix of business and leisure travel during the week.
+
+6. What is the average discount percentage offered on bookings?
+
+Query:
+
+select avg(discount / amount * 100) AS avg_discount_percentage from oyo_bookings where discount > 0;
+
+
+Result:
+
++-------------------------+
+| avg_discount_percentage |
++-------------------------+
+|             22.08616638 |
++-------------------------+
+
+Insights:
+
+The average discount percentage across bookings is approximately 22.08%, indicating a moderate level of discounting offered to customers.
+
+7. Top 5 Loyalty customers?
+
+Query:
+
+select customer_id, COUNT(*) AS booking_count 
+from oyo_bookings 
+where status='Stayed'
+group by customer_id 
+order by booking_count desc 
+limit 5;
+
+Result:
+
++-------------+---------------+
+| customer_id | booking_count |
++-------------+---------------+
+|       57801 |            19 |
+|       78365 |            18 |
+|      137492 |            16 |
+|       77179 |            10 |
+|      146622 |             8 |
++-------------+---------------+
+
+Insights:
+
+1. Identify and reward high-frequency customers such as customer ID 57801 and 78365 with loyalty programs or personalized    offers to incentivize repeat bookings and foster customer loyalty.
+
+2. Implement targeted marketing campaigns to engage customers who have made a moderate number of bookings to encourage additional bookings and increase customer lifetime value.
+
+8. Top 5 longest stayed customers
+
+Query: 
+
+select customer_id,DATEDIFF(check_out, check_in) AS days_stay
+from oyo_bookings
+where status='Stayed'  
+order by days_stay desc 
+limit 5;
+
+Result:
+
++-------------+-----------+
+| customer_id | days_stay |
++-------------+-----------+
+|       85876 |        14 |
+|        8240 |        13 |
+|       46095 |        12 |
+|       48864 |        11 |
+|       19246 |        11 |
++-------------+-----------+
+
+
+Insights:
+
+1. Customers such as customer ID 85876 and 8240 who stayed for extended periods (14 and 13 days, respectively) likely indicate long-term stays, possibly for vacation or business purposes.
+2. Bookings with longer durations, like those of customer IDs 46095, 48864, and 19246 (12 and 11 days), may suggest guests who prioritize longer stays or are visiting for special occasions, contributing to higher revenue and occupancy rates for the hotel.
+
+9. Monthly booking count
+
+Query:
+
+select month(date_of_booking) as months,count(*) as total_bookings 
+from oyo_bookings 
+group by months;
+
+
+Result:
+
++--------+----------------+
+| months | total_bookings |
++--------+----------------+
+|      1 |            999 |
+|      2 |            928 |
+|      3 |            961 |
++--------+----------------+
+
+Insights:
+
+1. The dataset shows relatively consistent booking activity across the first three months of the year, with January, February, and March recording 999, 928, and 961 total bookings, respectively.
+2. This consistency in booking volume suggests stable demand for accommodations during the early months of the year, possibly influenced by factors such as seasonal travel patterns, holidays, or business events.
+
+
+10. Calculate the cancellation rate by cities
+
+Query:
+
+SELECT ch.City, COUNT(*) AS total_bookings,
+    SUM(CASE WHEN ob.status = 'Cancelled' THEN 1 ELSE 0 END) AS cancelled_bookings,
+    (SUM(CASE WHEN ob.status = 'Cancelled' THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS cancellation_rate
+FROM oyo_bookings ob
+JOIN city_hotels ch ON ob.hotel_id = ch.Hotel_id
+GROUP BY ch.City;
+
+Result:
+
++-----------+----------------+--------------------+-------------------+
+| City      | total_bookings | cancelled_bookings | cancellation_rate |
++-----------+----------------+--------------------+-------------------+
+| Bangalore |            525 |                148 |           28.1905 |
+| Chennai   |             98 |                 29 |           29.5918 |
+| Delhi     |            609 |                238 |           39.0805 |
+| Gurgaon   |            872 |                280 |           32.1101 |
+| Hyderabad |            127 |                 48 |           37.7953 |
+| Jaipur    |            106 |                 30 |           28.3019 |
+| Kolkata   |             22 |                  7 |           31.8182 |
+| Mumbai    |            179 |                 58 |           32.4022 |
+| Noida     |            230 |                 87 |           37.8261 |
+| Pune      |            120 |                 28 |           23.3333 |
++-----------+----------------+--------------------+-------------------+
+
+Insights:
+
+1. Delhi exhibits the highest cancellation rate at 39.08%, indicating potential challenges in demand management or reservation policies.
+2. Bangalore, Mumbai, and Gurgaon also experience relatively high cancellation rates, suggesting opportunities for optimization in booking retention strategies.
+3. Pune stands out with a lower cancellation rate of 23.33%, potentially reflecting effective reservation management practices or a more stable booking environment.
+
+11. Revenue collected by each city?
+
+Query:
+
+SELECT ch.City, 
+    SUM(CASE 
+            WHEN ob.discount >= ob.amount THEN 0  -- If discount is greater than or equal to the total amount, no revenue
+            ELSE ob.no_of_rooms * (ob.amount - ob.discount)
+        END) AS revenue
+FROM oyo_bookings ob
+JOIN city_hotels ch ON ob.hotel_id = ch.Hotel_id
+where status='Stayed'
+GROUP BY ch.City;
+
+Result:
+
++-----------+---------+
+| City      | revenue |
++-----------+---------+
+| Gurgaon   | 1315626 |
+| Delhi     | 1239958 |
+| Noida     |  258990 |
+| Bangalore | 1217934 |
+| Mumbai    |  849740 |
+| Jaipur    |  327968 |
+| Pune      |  368418 |
+| Chennai   |  190963 |
+| Kolkata   |   41637 |
+| Hyderabad |  365405 |
++-----------+---------+
+
+Insights:
+
+1. Gurgaon and Delhi generate the highest revenue among the listed cities, with revenues of 1,315,626 and 1,239,958 respectively, indicating significant booking activity and potentially higher room rates or occupancy levels in these metropolitan areas.
+2. Kolkata and Chennai exhibit relatively lower revenue figures, suggesting comparatively lower booking volumes or potentially lower room rates in these cities. Exploring strategies to increase demand or optimize pricing could help enhance revenue in these markets.
+3. Noida and Hyderabad also contribute to overall revenue, albeit to a lesser extent compared to larger metropolitan areas like Gurgaon and Delhi, indicating opportunities for growth and market expansion in these regions.
+
+
+12. Revenue genrated till now
+
+Query:
+
+SELECT SUM(revenue) AS total_revenue_generated
+FROM (
+    SELECT 
+        ch.City, 
+        SUM(CASE 
+                WHEN ob.discount >= ob.amount THEN 0  -- If discount is greater than or equal to the total amount, no revenue
+                ELSE ob.no_of_rooms * (ob.amount - ob.discount)
+            END) AS revenue
+    FROM 
+        oyo_bookings ob
+    JOIN 
+        city_hotels ch ON ob.hotel_id = ch.Hotel_id
+    WHERE 
+        status = 'Stayed'
+    GROUP BY 
+        ch.City
+) AS revenue_by_city;
+
+Result:
+
++-------------------------+
+| total_revenue_generated |
++-------------------------+
+|                 6176639 |
++-------------------------+
+
+
+Insights:
+
+The total revenue generated till now is $6,176,639, reflecting the cumulative revenue from completed bookings across all cities. This indicates the overall financial performance of the hotel chain and serves as a key metric for assessing business success and profitability.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
